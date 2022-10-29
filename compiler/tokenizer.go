@@ -6,12 +6,17 @@ import (
 	"strings"
 )
 
+// We define the tokens
+// Tokens: special keywords reserved by the language (e.g. log) - see ../modules/main.wat
 var keywords = []string{
 	"log",
 }
 
+// The tokenizer goes through the input (string) and gets all the matching patterns
+// that represent the tokens
+
 // Higher order function
-func match(regex string, whichType string) func(string, int) types.Matcher {
+func matchChecker(regex string, whichType string) func(string, int) types.Matcher {
 
 	return func(input string, index int) types.Matcher {
 		substr := input[index:]
@@ -27,12 +32,12 @@ func match(regex string, whichType string) func(string, int) types.Matcher {
 }
 
 var matchers = []func(string, int) types.Matcher{
-	match("^[.0-9]+", "number"),
-	match("^("+strings.Join(keywords, "|")+")", "keyword"),
-	match("^\\s+", "whitespace"),
+	matchChecker("^[.0-9]+", "number"),
+	matchChecker("^("+strings.Join(keywords, "|")+")", "keyword"),
+	matchChecker("^\\s+", "whitespace"),
 }
 
-func Tokenize(input string) interface{} {
+func Tokenize(input string) []types.Token {
 	tokens := []types.Token{}
 	matches := []types.Matcher{}
 	index := 0

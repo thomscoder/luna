@@ -10,3 +10,13 @@ type Token struct {
 	Value string
 	Index int
 }
+
+type AstNode struct {
+	Type       string
+	Expression ExpressionNode
+}
+
+type ExpressionNode struct {
+	Type  string
+	Value interface{}
+}

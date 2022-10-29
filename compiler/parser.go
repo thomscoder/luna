@@ -6,6 +6,14 @@ import (
 	"strconv"
 )
 
+// Parsing guarantees that the input program is syntactically correct,
+// e.g. it is properly constructed,
+// but it doesn’t guarantee a successful execution
+// Runtime errors may still be present
+
+// This parser is a Go implementation of the Chasm parser
+// See https://blog.scottlogic.com/2019/05/17/webassembly-compiler.html#the-parser
+
 // Building an iterator emulator
 // I tried to emulate the Javascript's array[Symbol.iterator]()
 type iteratorEmulator int
@@ -73,11 +81,13 @@ func Parser(tokens []types.Token) []types.AstNode {
 func parseStatement(currentToken *iteratorEmulatorStruct, eatToken func(val string)) types.AstNode {
 	if currentToken.token.Type == "keyword" {
 		switch currentToken.token.Value {
+		// We parse the keyword "log"
 		case "log":
 			eatToken("")
 
 			return types.AstNode{
-				Type:       "logStatement",
+				Type: "logStatement",
+				// log will print something so we evaluate what comes after that
 				Expression: parseExpression(currentToken, eatToken),
 			}
 		}

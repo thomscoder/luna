@@ -1,13 +1,13 @@
 package compiler
 
 import (
-	"fmt"
 	"log"
 	"luna/types"
 	"strconv"
 )
 
 // Building an iterator emulator
+// I tried to emulate the Javascript's array[Symbol.iterator]()
 type iteratorEmulator int
 type iteratorEmulatorStruct struct {
 	token types.Token
@@ -19,7 +19,7 @@ func (i *iteratorEmulator) next(arr []types.Token) iteratorEmulatorStruct {
 	*i += 1
 	if int(*i) >= len(arr) {
 		return iteratorEmulatorStruct{
-			token: types.Token{},
+			token: token,
 			done:  true,
 		}
 	}
@@ -33,22 +33,21 @@ func (i *iteratorEmulator) next(arr []types.Token) iteratorEmulatorStruct {
 // See - https://en.wikipedia.org/wiki/Abstract_syntax_tree
 func Parser(tokens []types.Token) []types.AstNode {
 	if len(tokens) == 0 {
-		log.Fatal("No tokens to parse")
+		log.Fatal("No token to parse")
 	}
+
 	nodes := []types.AstNode{}
 	index := 0
 	// iterator
 	iterator := iteratorEmulator(0)
 
 	currentToken := iterator.next(tokens)
-	var nextToken iteratorEmulatorStruct
 
-	fmt.Println("FUCK", nextToken)
 	if currentToken.done {
 		return nodes
 	}
 
-	nextToken = iterator.next(tokens)
+	nextToken := iterator.next(tokens)
 
 	eatToken := func(tokenVal string) {
 		isValid, _ := strconv.ParseBool(tokenVal)
@@ -57,21 +56,26 @@ func Parser(tokens []types.Token) []types.AstNode {
 		}
 
 		currentToken = nextToken
+		if currentToken.done {
+			return
+		}
 		nextToken = iterator.next(tokens)
 	}
 
 	for index < len(tokens) {
-		nodes = append(nodes, parseStatement(currentToken, eatToken))
+		nodes = append(nodes, parseStatement(&currentToken, eatToken))
 		index++
 	}
+
 	return nodes
 }
 
-func parseStatement(currentToken iteratorEmulatorStruct, eatToken func(val string)) types.AstNode {
+func parseStatement(currentToken *iteratorEmulatorStruct, eatToken func(val string)) types.AstNode {
 	if currentToken.token.Type == "keyword" {
 		switch currentToken.token.Value {
 		case "log":
 			eatToken("")
+
 			return types.AstNode{
 				Type:       "logStatement",
 				Expression: parseExpression(currentToken, eatToken),
@@ -81,15 +85,15 @@ func parseStatement(currentToken iteratorEmulatorStruct, eatToken func(val strin
 	return types.AstNode{}
 }
 
-func parseExpression(currentToken iteratorEmulatorStruct, eatToken func(val string)) types.ExpressionNode {
-	var node types.ExpressionNode
+func parseExpression(currentToken *iteratorEmulatorStruct, eatToken func(val string)) types.ExpressionNode {
 	switch currentToken.token.Type {
 	case "number":
 		number, _ := strconv.Atoi(currentToken.token.Value)
-		node.Type = "numberLiteral"
-		node.Value = number
 		eatToken("")
-		return node
+		return types.ExpressionNode{
+			Type:  "numberLiteral",
+			Value: number,
+		}
 	}
 
 	return types.ExpressionNode{}

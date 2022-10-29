@@ -1,3 +1,3 @@
 compile:
-	go build -o ./dist/hali main.go && \
-	cd dist && ./hali
+	go build -o ./dist/luna main.go && \
+	cd dist && ./luna

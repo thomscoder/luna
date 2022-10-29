@@ -2,12 +2,15 @@ package main
 
 import (
 	"fmt"
-	"hali/handlers"
-	"hali/modules"
+	"luna/compiler"
+	// "luna/handlers"
+	// "luna/modules"
 )
 
 func main() {
-	wasm := modules.Emitter()
-	handlers.CreateFile(wasm)
-	fmt.Println(wasm)
+	// wasm := modules.Emitter()
+	// handlers.CreateFile(wasm)
+	// fmt.Println(wasm)
+
+	fmt.Println(compiler.Tokenize("log 34"))
 }

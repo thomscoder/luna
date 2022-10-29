@@ -1,3 +1,3 @@
-# Hali
+# Luna
 
-Hali is a minimalistic compiler to Wasm, written in Go.
+Luna is a minimalistic compiler to Wasm, written in Go.

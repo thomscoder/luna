@@ -7,7 +7,7 @@ import (
 )
 
 // We define the tokens
-// Tokens: special keywords reserved by the language (e.g. log) - see ../modules/main.wat
+// Tokens: special keywords reserved by the language (e.g. log) - see ../defaults/main.wat
 var keywords = []string{
 	"log",
 }

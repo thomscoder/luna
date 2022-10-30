@@ -2,7 +2,7 @@ package types
 
 // Number Types
 // See https://webassembly.github.io/spec/core/binary/types.html#number-types
-var NumTypes = map[string]int{
+var NumTypes = map[string]interface{}{
 	"i32": 0x7f,
 	"i64": 0x7e,
 	"f32": 0x7d,
@@ -23,7 +23,7 @@ const FuncType = 0x60
 
 // Value types
 // See https://webassembly.github.io/spec/core/binary/types.html#value-types
-var ValueTypes = map[string]int{
+var ValueTypes = map[string]interface{}{
 	"i32": 0x7f,
 	"i64": 0x7e,
 	"f32": 0x7d,

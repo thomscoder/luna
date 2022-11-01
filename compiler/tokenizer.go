@@ -18,7 +18,7 @@ import (
 // - Value Types: defined by the Web Assembly specifications (e.g. i32)
 
 // We define the tokens
-// Tokens: special tokens reserved by the language (e.g. log) - see ../defaults/main.wat
+// Tokens: special tokens reserved by the language (e.g. log)
 var tokens = []string{
 	"func",
 	"module",
@@ -45,11 +45,7 @@ var numTypes = []string{
 // So we do not need to change this everytime
 // Might implement a regex to match anything between quotes
 var literals = []string{
-	"addNumbers",
-	"adding",
-	"addition",
-	"add",
-	"luna",
+	"\"([^\"]+)\"",
 }
 
 // The tokenizer goes through the input (string) and gets all the matching patterns

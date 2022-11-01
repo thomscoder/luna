@@ -69,7 +69,6 @@ const runLunaAddition = async () => {
   compile.addEventListener('click', async () => {
     moduleContainer.innerHTML = ""
     const textContent = editor.getValue()
-    const functionName = textContent.match(/"([^"]+)"/)[1]
     // We call the startLuna function
     const _wasm = startLuna(textContent).module.split(" ").map(v => parseInt(v, 10))
 
@@ -93,7 +92,7 @@ const runLunaAddition = async () => {
         console.log("n", input2.value)
         // Call Luna add function
         res.innerHTML = "Result: " 
-        res.innerHTML += wasmer.instance.exports[functionName](n1, n2)
+        res.innerHTML += wasmer.instance.exports[fn](n1, n2)
 
       })
     } catch (err) {

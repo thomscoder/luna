@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello Luna</title>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.9/lib/codemirror.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/codemirror.min.css" integrity="sha512-uf06llspW44/LZpHzHT6qBOIVODjWtv4MxCricRxkzvopAlSWnTf6hpZTFxuuZcuNE9CBQhqE0Seu1CoRk84nQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="./css/style.css" />
+
+  </head>
+  <body>
+    <h1>Luna</h1>
+    <div class="container">
+      <div class="inner-container">
+        <div id="code"></div>
+        <button id="compile">Compile</button>
+      </div>
+      <div class="inner-container">
+        <div id="module"></div>
+      </div>
+      <div class="inner-container">
+        Add two numbers:
+        <div>
+          <label for="t-input-1">Num 1</label>
+          <input name="t-input-1" id="input-1" type="text" />
+        </div>
+        <div>
+          <label for="t-input-2">Num 2</label>
+          <input name="t-input-2" id="input-2" type="text" />
+        </div>
+        <div id="btn-result-container"><button id="btn">Result</button></div>
+        <div id="result"></div>
+      </div>
+    </div>
+    <!-- 
+    The wasm_exec.js must come before our Javascript (index.js), 
+    as it defines some global objects 
+    -->
+    <script src="./js/wasm_exec.js"></script>
+    <script src="./editor/editor.js"></script>
+    <script type="module" src="./js/index.js"></script>
+  </body>
+</html>

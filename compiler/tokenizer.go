@@ -1,40 +1,84 @@
 package compiler
 
 import (
+	"errors"
+	"luna/texts"
 	"luna/types"
 	"regexp"
 	"strings"
 )
 
+// Inside this wasm module there are two main things:
+// - A function (identified with the keyword func)
+// - The export (identified with the keyword export)
+
+// More generally speaking this module consists of 3 parts
+// - Tokens: special keywords reserved by the language (e.g. func, param, module, local.get etc...)
+// - Identifiers: what can be set to arbitrary values (e.g. $firstNumber, $secondNumber)
+// - Value Types: defined by the Web Assembly specifications (e.g. i32)
+
 // We define the tokens
-// Tokens: special keywords reserved by the language (e.g. log) - see ../defaults/main.wat
-var keywords = []string{
-	"log",
+// Tokens: special tokens reserved by the language (e.g. log) - see ../defaults/main.wat
+var tokens = []string{
+	"func",
+	"module",
+	"export",
+	"result",
+	"param",
+}
+
+// Hard coding identifiers for simplicity reasons (since the example won't change)
+// A better and more robust regex could be implemented
+var instructions = []string{
+	"local\\.get",
+	"i32\\.add",
+}
+
+var numTypes = []string{
+	"i32",
+	"i64",
+	"f32",
+	"f64",
+}
+
+// Bunch of names for function export
+// So we do not need to change this everytime
+// Might implement a regex to match anything between quotes
+var literals = []string{
+	"addNumbers",
+	"adding",
+	"addition",
+	"add",
+	"luna",
 }
 
 // The tokenizer goes through the input (string) and gets all the matching patterns
 // that represent the tokens
 
 // Higher order function
-func matchChecker(regex string, whichType string) func(string, int) types.Matcher {
+func matchChecker(regex string, whichType string) func(string, int) (types.Matcher, error) {
 
-	return func(input string, index int) types.Matcher {
+	return func(input string, index int) (types.Matcher, error) {
+
 		substr := input[index:]
 		rxp := regexp.MustCompile(regex)
-		match := rxp.FindAllString(substr, -1)
+		match := rxp.FindString(substr)
 
 		if len(match) > 0 {
-			return types.Matcher{Type: whichType, Value: match[0]}
+			return types.Matcher{Type: whichType, Value: match}, nil
 		}
 
-		return types.Matcher{}
+		return types.Matcher{}, errors.New("no match found")
 	}
 }
 
-var matchers = []func(string, int) types.Matcher{
-	matchChecker("^[.0-9]+", "number"),
-	matchChecker("^("+strings.Join(keywords, "|")+")", "keyword"),
-	matchChecker("^\\s+", "whitespace"),
+var matchers = []func(string, int) (types.Matcher, error){
+	matchChecker("^("+strings.Join(tokens, "|")+")", texts.TypeToken),
+	matchChecker("^("+strings.Join(instructions, "|")+")", texts.TypeInstruction),
+	matchChecker("^("+strings.Join(numTypes, "|")+")", texts.TypeNum),
+	matchChecker("^("+strings.Join(literals, "|")+")", texts.TypeLiteral),
+	matchChecker("^[0-9]+", texts.Number),
+	matchChecker("^\\s+", texts.Whitespace),
 }
 
 func Tokenize(input string) []types.Token {
@@ -43,14 +87,19 @@ func Tokenize(input string) []types.Token {
 	index := 0
 	for index < len(input) {
 		for _, m := range matchers {
-			matchFound := m(input, index)
+			matchFound, notFound := m(input, index)
+
 			// Prevent panic if no match is found
-			if (matchFound == types.Matcher{}) {
+			if notFound != nil {
 				continue
 			}
+
 			matches = append(matches, matchFound)
 		}
-
+		if len(matches) == 0 {
+			index++
+			continue
+		}
 		match := types.Token{
 			Type:  matches[0].Type,
 			Value: matches[0].Value,

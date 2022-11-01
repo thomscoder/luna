@@ -4,17 +4,15 @@
 
 package compiler
 
-import (
-	"encoding/binary"
-	"fmt"
-	"math"
-)
+func encodeString(str string) []interface{} {
 
-func Ieee754(number int) [4]byte {
-	var buf [4]byte
-	binary.LittleEndian.PutUint32(buf[:], math.Float32bits(float32(number)))
-	fmt.Println("WHAT", buf)
-	return buf
+	encodedString := []interface{}{}
+
+	for _, v := range str {
+		encodedString = append(encodedString, interface{}(rune(v)))
+	}
+
+	return encodedString
 }
 
 func EncodeUnsignedLEB128(number uint) []uint {

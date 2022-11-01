@@ -28,6 +28,7 @@ var (
 	f32_lt      = 0x5d
 	f32_gt      = 0x5e
 	i32_and     = 0x71
+	i32_add     = 0x6a
 	f32_add     = 0x92
 	f32_sub     = 0x93
 	f32_mul     = 0x94
@@ -47,6 +48,7 @@ var Opcodes = map[string]interface{}{
 	"i32_const":   i32_const,
 	"f32_const":   f32_const,
 	"i32_eqz":     i32_eqz,
+	"i32_add":     i32_add,
 	"i32_eq":      i32_eq,
 	"f32_eq":      f32_eq,
 	"f32_lt":      f32_lt,
@@ -69,10 +71,23 @@ var OperatorsOpcodes = map[string]interface{}{
 	"&&": i32_and,
 }
 
+// Section
+var Section = map[string]interface{}{
+	"custom": 0x00,
+	"type":   0x01,
+	"import": 0x02,
+	"func":   0x03,
+	"table":  0x04,
+	"memory": 0x05,
+	"global": 0x06,
+	"export": 0x07,
+	"code":   0xa,
+}
+
 // Export section
 // Based on http://webassembly.github.io/spec/core/binary/modules.html#export-section
 var ExportSection = map[string]interface{}{
-	"funx":   0x00,
+	"func":   0x00,
 	"table":  0x01,
 	"mem":    0x02,
 	"global": 0x03,

@@ -1,0 +1,38 @@
+.inner-container:not(.inner-container:first-child) {
+    border: solid black;
+    width: 400px;
+}
+
+#code {
+    border: solid black;
+}
+
+.inner-container:not(.inner-container:first-child) {
+    padding: 10px;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.exported {
+    color: red;
+    display: inline-block
+}
+
+.hex-dump {
+    display: inline-block
+}
+
+.hex-dump {
+    width: 10%;
+    background-color: #1e1e1e;
+    color: #fff;
+}
+
+#btn-result-container {
+    padding: 10px 0;
+}

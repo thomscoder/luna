@@ -2,6 +2,8 @@ package compiler
 
 import (
 	"log"
+	"luna/defaults"
+	"luna/texts"
 	"luna/types"
 	"strconv"
 )
@@ -71,39 +73,127 @@ func Parser(tokens []types.Token) []types.AstNode {
 	}
 
 	for index < len(tokens) {
-		nodes = append(nodes, parseStatement(&currentToken, eatToken))
+		nodes = append(nodes, parseStatement(&currentToken, eatToken, &index))
 		index++
 	}
 
 	return nodes
 }
 
-func parseStatement(currentToken *iteratorEmulatorStruct, eatToken func(val string)) types.AstNode {
-	if currentToken.token.Type == "keyword" {
+func parseStatement(currentToken *iteratorEmulatorStruct, eatToken func(val string), index *int) types.AstNode {
+	if currentToken.token.Type == texts.TypeToken {
 		switch currentToken.token.Value {
-		// We parse the keyword "log"
-		case "log":
-			eatToken("")
+		case "module":
+			eatToken("module")
+			return types.AstNode{
+				Type: texts.ModuleStatement,
+				// log will print something so we evaluate what comes after that
+				Expression: types.ExpressionNode{},
+			}
+
+		case "func":
+			eatToken("func")
 
 			return types.AstNode{
-				Type: "logStatement",
+				Type: texts.FuncStatement,
 				// log will print something so we evaluate what comes after that
-				Expression: parseExpression(currentToken, eatToken),
+				Expression: types.ExpressionNode{},
+			}
+		case "export":
+			eatToken("export")
+
+			return types.AstNode{
+				Type: texts.ExportStatement,
+				// log will print something so we evaluate what comes after that
+				Expression: parseExpression(currentToken, eatToken, index),
+			}
+		case "result":
+			eatToken("result")
+
+			return types.AstNode{
+				Type: texts.ResultStatement,
+				// log will print something so we evaluate what comes after that
+				Expression: parseExpression(currentToken, eatToken, index),
+			}
+		case "param":
+			eatToken("param")
+
+			return types.AstNode{
+				Type: texts.ParamStatement,
+				// log will print something so we evaluate what comes after that
+				Expression: types.ExpressionNode{},
 			}
 		}
 	}
+
+	if currentToken.token.Type == texts.TypeInstruction {
+		switch currentToken.token.Value {
+		case "local.get":
+			eatToken("local.get")
+			return types.AstNode{
+				Type:       texts.GetLocalInstruction,
+				Expression: parseExpression(currentToken, eatToken, index),
+				MapTo:      defaults.Opcodes["get_local"],
+			}
+		}
+		switch currentToken.token.Value {
+		case "i32.add":
+			eatToken("i32.add")
+			return types.AstNode{
+				Type:       texts.FuncInstruction,
+				Expression: types.ExpressionNode{},
+				MapTo:      defaults.Opcodes["i32_add"],
+			}
+		}
+	}
+
+	if currentToken.token.Type == texts.TypeNum {
+		switch currentToken.token.Value {
+		case "i32":
+			eatToken("i32")
+			return types.AstNode{
+				Type:       texts.TypeNum32,
+				Expression: types.ExpressionNode{},
+				MapTo:      types.ValType["i32"],
+			}
+		}
+	}
+
 	return types.AstNode{}
 }
 
-func parseExpression(currentToken *iteratorEmulatorStruct, eatToken func(val string)) types.ExpressionNode {
+func parseExpression(currentToken *iteratorEmulatorStruct, eatToken func(val string), index *int) types.ExpressionNode {
 	switch currentToken.token.Type {
 	case "number":
-		number, _ := strconv.Atoi(currentToken.token.Value)
-		eatToken("")
-		return types.ExpressionNode{
-			Type:  "numberLiteral",
-			Value: number,
+		log := types.ExpressionNode{
+			Type:  texts.NumberLiteral,
+			Value: currentToken.token.Value,
 		}
+		eatToken("number")
+		*index++
+
+		return log
+
+	case "literal":
+		log := types.ExpressionNode{
+			Type:  texts.TypeLiteral,
+			Value: currentToken.token.Value,
+		}
+		eatToken("literal")
+		*index++
+
+		return log
+
+	case "typeNum":
+		log := types.ExpressionNode{
+			Type:  texts.TypeNum32,
+			Value: currentToken.token.Value,
+		}
+		eatToken("typeNum")
+		*index++
+
+		return log
+
 	}
 
 	return types.ExpressionNode{}

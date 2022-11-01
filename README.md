@@ -4,7 +4,7 @@ Luna is a reeeaaally tiny, yet expanding, sample compiler for WebAssembly Text F
 
 (I just wanted to build something like wat2wasm)
 
-<img src="https://i.ibb.co/dbRBGZk/Screenshot-2022-11-01-alle-16-41-50.png" alt="luna" />
+<img src="https://i.ibb.co/hdcV1h0/Screenshot-2022-11-01-alle-17-47-06.png" alt="luna" />
 
 It is so tiny that can only make additions lol.
 

@@ -10,13 +10,21 @@
   </head>
   <body>
     <h1>Luna</h1>
+    <p>
+      Welcome to Luna.<br/>
+      A sample compiler for WebAssembly Text Format.<br/>
+      Check the <a href="http://github.com/thomscoder/luna" target="_blank">github repository</a>
+    </p>
     <div class="container">
       <div class="inner-container">
+        <small>Try to change the name of the export (e.g. "addNumbers" to "lunaAddition")</small>
         <div id="code"></div>
         <button id="compile">Compile</button>
       </div>
       <div class="inner-container">
-        <div id="module"></div>
+        <div id="module">
+          <small>Waiting... (click the compile button)</small>
+        </div>
       </div>
       <div class="inner-container">
         Add two numbers:

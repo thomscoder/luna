@@ -8,7 +8,16 @@ import (
 	"strconv"
 )
 
-// Our binary should resemble something like this
+// A WebAssembly module is organized into sections
+
+// Each section consists of:
+// - a one-byte section id,
+// - the  size of the contents, in bytes,
+// - the actual contents, whose structure is depended on the section id (which for most case encodes a Vector)
+
+// Every section is optional, any omitted section will be treated as the section being present
+// with empty contents.
+// So our binary should resemble something like this
 
 // 0000000: 0061 736d                                 ; WASM_BINARY_MAGIC
 // 0000004: 0100 0000                                 ; WASM_BINARY_VERSION
@@ -67,8 +76,9 @@ import (
 // 0000034: 03                                        ; FIXUP subsection size
 // 000002d: 0a                                        ; FIXUP section size
 
-// For a detailed explanation of sections
-// See https://webassembly.github.io/spec/core/binary/modules.html#sections
+// For a way more detailed explanation
+// See https://webassembly.github.io/spec/core/binary/modules.html
+
 type sectionData []interface{}
 type Module []interface{}
 
@@ -95,7 +105,6 @@ func recursively(index int, input sectionData, output *sectionData) {
 }
 
 func createSection(secType interface{}, data sectionData) sectionData {
-	// Size of section
 	encodeData := encodeVector(data)
 
 	section := sectionData{}
@@ -128,6 +137,7 @@ func omologateEncoded(num uint) sectionData {
 	return tmp
 }
 
+// So let's start building our compiler
 func Compile(ast []types.AstNode) Module {
 
 	var module = Module{}
@@ -160,10 +170,9 @@ func Compile(ast []types.AstNode) Module {
 			module = append(module, defaults.MAGIC...)
 			module = append(module, defaults.VERSION...)
 		case texts.FuncStatement:
-			// num of types
+			// num of types (i32, f32, i64, f64) inside the function
 			functionType = append(functionType, sectionData{0x01}...)
 
-			// The type section has the id 1. It decodes into a vector of function types that represent the  component of a module.
 			// Function types classify the signature of functions, mapping a vector of parameters to a vector of results.
 			functionType = append(functionType, sectionData{types.FuncType}...)
 
@@ -181,14 +190,13 @@ func Compile(ast []types.AstNode) Module {
 				log.Fatal("not a string")
 			}
 			// Result
-			// Num of returned results (hard coding 1)
+			// Currently WebAssembly supports only one returned result
 			functionType = append(functionType, encodeVector(sectionData{
 				types.ValType[value],
 			})...)
 
-			//fmt.Println("fil", SECTION_EXPORT)
-			// Let's build code section
-
+		// Instructions
+		// https://webassembly.github.io/spec/core/binary/instructions.html
 		case texts.GetLocalInstruction:
 			var localIndex uint
 			value, ok := node.Expression.Value.(string)
@@ -202,6 +210,7 @@ func Compile(ast []types.AstNode) Module {
 			code = append(code, sectionData{node.MapTo}...)
 			code = append(code, omologateEncoded(localIndex)...)
 
+		// Export section
 		case texts.ExportStatement:
 			value, ok := node.Expression.Value.(string)
 			if !ok {
@@ -211,19 +220,14 @@ func Compile(ast []types.AstNode) Module {
 			// Let's build export section
 			encodedString := encodeString(value)
 
-			// DEPRECATED
-			// The above is easier to be decode by Javascript
-			// for i := 0; i < len(name); i++ {
-			// 	r, _ := utf8.DecodeRuneInString(string(name[i]))
-			// 	s := fmt.Sprintf("%x", r)
-			// 	encodedString = append(encodedString, interface{}(s))
-			// }
-
 			// number of exports
+			// We only have one export so the number is one
 			exportData = append(exportData, sectionData{0x01}...)
 			exportData = append(exportData, encodeVector(encodedString)...)
 			exportData = append(exportData, sectionData{defaults.ExportSection["func"]}...)
-			exportData = append(exportData, sectionData{0x0}...)
+			// Export type index
+			// We only have one exported function so the index is 0
+			exportData = append(exportData, sectionData{0x00}...)
 
 		// Remember the concept of Stack Machine
 		case texts.FuncInstruction:
@@ -232,11 +236,13 @@ func Compile(ast []types.AstNode) Module {
 			// Put all the section code together
 			functionBodyData := sectionData{}
 
+			// Locals declaration count
+			// See https://webassembly.github.io/spec/core/binary/modules.html#code-section:~:text=Local%20declarations
 			functionBodyData = append(functionBodyData, sectionData{0x00}...)
 			functionBodyData = append(functionBodyData, code...)
 			functionBodyData = append(functionBodyData, sectionData{defaults.Opcodes["end"]})
 
-			// num of functions
+			// Number of functions
 			functionBody = append(functionBody, sectionData{0x01})
 			functionBody = append(functionBody, encodeVector(functionBodyData)...)
 
@@ -245,12 +251,22 @@ func Compile(ast []types.AstNode) Module {
 	}
 
 	// Type Section
+	// The type section has the id 1. It decodes into a vector of function types that represent the  component of a module.
+	// See https://webassembly.github.io/spec/core/binary/modules.html#type-section
 	SECTION_TYPE = createSection(defaults.Section["type"], functionType)
 	// Func Section
+	// The function section has the id 3. It decodes into a vector of type indices that represent the type fields
+	// of the functions in the funcs component of a module.
+	// See https://webassembly.github.io/spec/core/binary/modules.html#function-section
 	SECTION_FUNCTION = createSection(defaults.Section["func"], encodeVector(sectionData{0x00}))
 	// Code section
+	// The code section has the id 10. It decodes into a vector of code entries that are pairs of value type vectors and expressions.
+	// See https://webassembly.github.io/spec/core/binary/modules.html#code-section
 	SECTION_CODE = createSection(defaults.Section["code"], functionBody)
 	// Export Section
+	// The export section has the id 7.
+	// It decodes into a vector of exports that represent the  component of a module.
+	// See https://webassembly.github.io/spec/core/binary/modules.html#export-section
 	SECTION_EXPORT = createSection(defaults.Section["export"], exportData)
 
 	module = append(module, SECTION_TYPE...)

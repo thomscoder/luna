@@ -40,6 +40,7 @@ func (i *iteratorEmulator) next(arr []types.Token) iteratorEmulatorStruct {
 }
 
 // The parse receives the array of Tokens and creates an AST (abstract syntax tree)
+// This AST creation is very basic but useful to learn the concept.
 // See - https://en.wikipedia.org/wiki/Abstract_syntax_tree
 func Parser(tokens []types.Token) []types.AstNode {
 	if len(tokens) == 0 {
@@ -82,12 +83,12 @@ func Parser(tokens []types.Token) []types.AstNode {
 
 func parseStatement(currentToken *iteratorEmulatorStruct, eatToken func(val string), index *int) types.AstNode {
 	if currentToken.token.Type == texts.TypeToken {
+		// We stat parsing the tokens of "type" tokens
 		switch currentToken.token.Value {
 		case "module":
 			eatToken("module")
 			return types.AstNode{
-				Type: texts.ModuleStatement,
-				// log will print something so we evaluate what comes after that
+				Type:       texts.ModuleStatement,
 				Expression: types.ExpressionNode{},
 			}
 
@@ -95,37 +96,36 @@ func parseStatement(currentToken *iteratorEmulatorStruct, eatToken func(val stri
 			eatToken("func")
 
 			return types.AstNode{
-				Type: texts.FuncStatement,
-				// log will print something so we evaluate what comes after that
+				Type:       texts.FuncStatement,
 				Expression: types.ExpressionNode{},
 			}
 		case "export":
 			eatToken("export")
 
 			return types.AstNode{
-				Type: texts.ExportStatement,
-				// log will print something so we evaluate what comes after that
+				Type:       texts.ExportStatement,
 				Expression: parseExpression(currentToken, eatToken, index),
 			}
 		case "result":
 			eatToken("result")
 
 			return types.AstNode{
-				Type: texts.ResultStatement,
-				// log will print something so we evaluate what comes after that
+				Type:       texts.ResultStatement,
 				Expression: parseExpression(currentToken, eatToken, index),
 			}
 		case "param":
 			eatToken("param")
 
 			return types.AstNode{
-				Type: texts.ParamStatement,
-				// log will print something so we evaluate what comes after that
+				Type:       texts.ParamStatement,
 				Expression: types.ExpressionNode{},
 			}
 		}
 	}
 
+	// We parse the instructions
+	// Instructions are usually tied to the token that comes after them
+	// so we inspect the token that comes after the instruction and eventually tie them together
 	if currentToken.token.Type == texts.TypeInstruction {
 		switch currentToken.token.Value {
 		case "local.get":
@@ -162,6 +162,8 @@ func parseStatement(currentToken *iteratorEmulatorStruct, eatToken func(val stri
 	return types.AstNode{}
 }
 
+// This is used to inspect the NEXT token and eventually
+// tie it with the current token
 func parseExpression(currentToken *iteratorEmulatorStruct, eatToken func(val string), index *int) types.ExpressionNode {
 	switch currentToken.token.Type {
 	case "number":

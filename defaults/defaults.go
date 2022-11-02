@@ -60,18 +60,8 @@ var Opcodes = map[string]interface{}{
 	"f32_div":     f32_div,
 }
 
-var OperatorsOpcodes = map[string]interface{}{
-	"+":  f32_add,
-	"-":  f32_sub,
-	"*":  f32_mul,
-	"/":  f32_div,
-	"==": f32_eq,
-	">":  f32_gt,
-	"<":  f32_lt,
-	"&&": i32_and,
-}
-
 // Section
+// See https://webassembly.github.io/spec/core/binary/modules.html#sections
 var Section = map[string]interface{}{
 	"custom": 0x00,
 	"type":   0x01,

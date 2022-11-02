@@ -12,9 +12,9 @@ import (
 // - A function (identified with the keyword func)
 // - The export (identified with the keyword export)
 
-// More generally speaking this module consists of 3 parts
+// More generally speaking a module consists of 3 parts
 // - Tokens: special keywords reserved by the language (e.g. func, param, module, local.get etc...)
-// - Identifiers: what can be set to arbitrary values (e.g. $firstNumber, $secondNumber)
+// - Identifiers: what can be set to arbitrary values, they start with the dollar sign (e.g. $firstNumber, $secondNumber)
 // - Value Types: defined by the Web Assembly specifications (e.g. i32)
 
 // We define the tokens
@@ -41,9 +41,9 @@ var numTypes = []string{
 	"f64",
 }
 
-// Bunch of names for function export
-// So we do not need to change this everytime
-// Might implement a regex to match anything between quotes
+// We can hard hardcode a bunch of names for function export
+// so we do not need to change this everytime
+// or implement a simple regex to catch anything between quotes
 var literals = []string{
 	"\"([^\"]+)\"",
 }

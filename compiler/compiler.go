@@ -163,7 +163,7 @@ func Compile(ast []types.AstNode) Module {
 	functionBody := sectionData{}
 	code := sectionData{}
 
-	for _, node := range ast {
+	for index, node := range ast {
 		switch node.Type {
 		case texts.ModuleStatement:
 			// MAGIC and VERSION don't change until a newer version of WebAssembly gets released
@@ -177,12 +177,34 @@ func Compile(ast []types.AstNode) Module {
 			functionType = append(functionType, sectionData{types.FuncType}...)
 
 		case texts.ParamStatement:
+			paramsAlreadyAdded := false
+
+			value, ok := node.Expression.Value.(string)
+			if !ok {
+				log.Fatal("not a string")
+			}
+			params := sectionData{types.ValType[value]}
 			// Params
-			// Num of params (harcoding 2)
-			functionType = append(functionType, encodeVector(sectionData{
-				types.ValType["i32"],
-				types.ValType["i32"],
-			})...)
+			// Get num of params dynamically
+			for idx, _node := range ast[index+1:] {
+				nextNode := ast[index+(idx+1)]
+
+				if (_node.Type != texts.ParamStatement) && (nextNode.Type != texts.TypeNum32) {
+					// All the parameters were parsed already
+					if idx == 0 {
+						paramsAlreadyAdded = true
+					}
+					break
+				}
+
+				params = append(params, sectionData{types.ValType[value]})
+			}
+
+			if paramsAlreadyAdded {
+				continue
+			}
+
+			functionType = append(functionType, encodeVector(params)...)
 
 		case texts.ResultStatement:
 			value, ok := node.Expression.Value.(string)

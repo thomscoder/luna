@@ -6,6 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf ./dist && make compile",
+    "start:runtime": "node ./runtime/index.js",
+    "bundle": "rimraf ./example/dist && esbuild ./runtime/runtime/start.js --bundle --outfile=./example/dist/bundle.js --format=esm",
     "commit": "cz"
   },
   "keywords": [],
@@ -13,6 +15,7 @@
   "license": "ISC",
   "devDependencies": {
     "commitizen": "^4.2.5",
+    "esbuild": "^0.15.13",
     "rimraf": "^3.0.2"
   }
 }

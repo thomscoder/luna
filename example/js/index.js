@@ -1,3 +1,5 @@
+import startAeonRuntime from '../dist/bundle.js';
+
 const go = new Go(); // Defined in wasm_exec.js. Don't forget to add this in your index.html.
 
 
@@ -48,6 +50,7 @@ const runLunaAddition = async () => {
   const btn = document.getElementById('btn')
 
   const res = document.getElementById('result');
+  const aeonRes = document.getElementById('result-aeon');
 
 
   btn.setAttribute('disabled', true)
@@ -60,11 +63,11 @@ const runLunaAddition = async () => {
 `
 
 
-    const editor = CodeMirror(codeContainer, {
-      value: input,
-      mode:  "wast",
-      lineNumbers: true,
-    });
+  const editor = CodeMirror(codeContainer, {
+    value: input,
+    mode:  "wast",
+    lineNumbers: true,
+  });
 
   compile.addEventListener('click', async () => {
     moduleContainer.innerHTML = ""
@@ -88,19 +91,25 @@ const runLunaAddition = async () => {
       btn.addEventListener('click', () => {
         const n1 = Number(input1.value);
         const n2 = Number(input2.value)
-        console.log("n", input1.value)
-        console.log("n", input2.value)
         // Call Luna add function
         res.innerHTML = "Result: " 
         res.innerHTML += wasmer.instance.exports[fn](n1, n2)
 
+      // ---------------------------------------------------------------------------------------
+      // ---------------------------------------------------------------------------------------
+      // ------------------------------RUN IT WITH AEON RUNTIME---------------------------------
+      // ---------------------------------------------------------------------------------------
+      // ---------------------------------------------------------------------------------------
+      const funcName = fn.replace(/"/g, '');
+
+      const result = startAeonRuntime(_wasm, funcName, n1, n2);
+      aeonRes.innerHTML = `Ran with Aeon: ${result}`
       })
     } catch (err) {
       btn.setAttribute('disabled', true)
       moduleContainer.innerHTML = String(err);
     }
 
-    
   })
   
 };

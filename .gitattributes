@@ -1,0 +1,3 @@
+runtime/** linguist-vendored
+
+runtime/example/main.wat -linguist-vendored

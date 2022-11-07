@@ -47,6 +47,11 @@ In the `./example` directory there's a working example of how to do that.
 
 > 💡 - Check the console to see the tokenizer and the parser outputs
 
+# Aeon Runtime
+
+Luna also implements a really tiny runtime that can run the exported functions.
+Read more about it in `./runtime/README.md`
+
 # Requirements ✋
 
 - Go
@@ -63,8 +68,6 @@ In the `./example` directory there's a working example of how to do that.
     Currently Luna supports only addition
 
 3. <h3>Expansion of Wat syntax</h3>
-
-4. <h3>Moonlight runtime - a minimal educational-oriented runtime for luna (in progress)</h3>
 
 # Contributing
 

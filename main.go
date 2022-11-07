@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"luna/compiler"
 	"strings"
+
 	"syscall/js"
 
 	"github.com/spatialcurrent/go-stringify/pkg/stringify"
@@ -14,14 +15,12 @@ func main() {
 
 	if mode != "browser" {
 		input := `
-			module
-			function 
-			param i32 i32 
-			get 0
-			get 1
-			i32.add
-			result i32
-			export "addNumbers" 
+			(module
+				(func (export "addNumbers") (param i32 i32) (result i32)
+					local.get 0
+					local.get 1
+					i32.add)
+				)
 		`
 		compile(input)
 		return

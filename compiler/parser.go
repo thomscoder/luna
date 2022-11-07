@@ -118,7 +118,7 @@ func parseStatement(currentToken *iteratorEmulatorStruct, eatToken func(val stri
 
 			return types.AstNode{
 				Type:       texts.ParamStatement,
-				Expression: types.ExpressionNode{},
+				Expression: parseExpression(currentToken, eatToken, index),
 			}
 		}
 	}
@@ -143,6 +143,13 @@ func parseStatement(currentToken *iteratorEmulatorStruct, eatToken func(val stri
 				Type:       texts.FuncInstruction,
 				Expression: types.ExpressionNode{},
 				MapTo:      defaults.Opcodes["i32_add"],
+			}
+		case "i32.sub":
+			eatToken("i32.sub")
+			return types.AstNode{
+				Type:       texts.FuncInstruction,
+				Expression: types.ExpressionNode{},
+				MapTo:      defaults.Opcodes["i32_sub"],
 			}
 		}
 	}

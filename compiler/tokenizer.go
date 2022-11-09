@@ -31,7 +31,7 @@ var tokens = []string{
 // A better and more robust regex could be implemented
 var instructions = []string{
 	"local\\.get",
-	"i32\\.add",
+	"i32\\.(add|sub)",
 }
 
 var numTypes = []string{

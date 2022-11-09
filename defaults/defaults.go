@@ -29,6 +29,7 @@ var (
 	f32_gt      = 0x5e
 	i32_and     = 0x71
 	i32_add     = 0x6a
+	i32_sub     = 0x6b
 	f32_add     = 0x92
 	f32_sub     = 0x93
 	f32_mul     = 0x94
@@ -49,6 +50,7 @@ var Opcodes = map[string]interface{}{
 	"f32_const":   f32_const,
 	"i32_eqz":     i32_eqz,
 	"i32_add":     i32_add,
+	"i32_sub":     i32_sub,
 	"i32_eq":      i32_eq,
 	"f32_eq":      f32_eq,
 	"f32_lt":      f32_lt,

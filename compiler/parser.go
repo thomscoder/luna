@@ -74,6 +74,7 @@ func Parser(tokens []types.Token) []types.AstNode {
 	}
 
 	for index < len(tokens) {
+
 		nodes = append(nodes, parseStatement(&currentToken, eatToken, &index))
 		index++
 	}
@@ -82,6 +83,7 @@ func Parser(tokens []types.Token) []types.AstNode {
 }
 
 func parseStatement(currentToken *iteratorEmulatorStruct, eatToken func(val string), index *int) types.AstNode {
+
 	if currentToken.token.Type == texts.TypeToken {
 		// We stat parsing the tokens of "type" tokens
 		switch currentToken.token.Value {
@@ -97,7 +99,7 @@ func parseStatement(currentToken *iteratorEmulatorStruct, eatToken func(val stri
 
 			return types.AstNode{
 				Type:       texts.FuncStatement,
-				Expression: types.ExpressionNode{},
+				Expression: parseExpression(currentToken, eatToken, index),
 			}
 		case "export":
 			eatToken("export")
@@ -135,8 +137,7 @@ func parseStatement(currentToken *iteratorEmulatorStruct, eatToken func(val stri
 				Expression: parseExpression(currentToken, eatToken, index),
 				MapTo:      defaults.Opcodes["get_local"],
 			}
-		}
-		switch currentToken.token.Value {
+
 		case "i32.add":
 			eatToken("i32.add")
 			return types.AstNode{
@@ -144,12 +145,29 @@ func parseStatement(currentToken *iteratorEmulatorStruct, eatToken func(val stri
 				Expression: types.ExpressionNode{},
 				MapTo:      defaults.Opcodes["i32_add"],
 			}
+
 		case "i32.sub":
 			eatToken("i32.sub")
 			return types.AstNode{
 				Type:       texts.FuncInstruction,
 				Expression: types.ExpressionNode{},
 				MapTo:      defaults.Opcodes["i32_sub"],
+			}
+
+		case "i32.const":
+			eatToken("i32.const")
+			return types.AstNode{
+				Type:       texts.InternalInstruction,
+				Expression: parseExpression(currentToken, eatToken, index),
+				MapTo:      defaults.Opcodes["i32_const"],
+			}
+
+		case "call":
+			eatToken("call")
+
+			return types.AstNode{
+				Type:       texts.CallStatement,
+				Expression: parseExpression(currentToken, eatToken, index),
 			}
 		}
 	}
@@ -166,6 +184,16 @@ func parseStatement(currentToken *iteratorEmulatorStruct, eatToken func(val stri
 		}
 	}
 
+	if currentToken.token.Type == texts.FuncInternal {
+		eatToken("")
+		return types.AstNode{
+			Type:       texts.FuncInternalName,
+			Expression: types.ExpressionNode{},
+		}
+	}
+
+	// Go on if it can't be parsed
+	eatToken("")
 	return types.AstNode{}
 }
 
@@ -203,6 +231,16 @@ func parseExpression(currentToken *iteratorEmulatorStruct, eatToken func(val str
 
 		return log
 
+	case "funcInternal":
+		log := types.ExpressionNode{
+			Type:  texts.FuncInternalName,
+			Value: currentToken.token.Value,
+		}
+
+		eatToken("funcInternal")
+		*index++
+
+		return log
 	}
 
 	return types.ExpressionNode{}

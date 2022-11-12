@@ -27,11 +27,17 @@ var tokens = []string{
 	"param",
 }
 
+// Tokens to call module scoped functions (e.g. $add)
+var tokensFuncInternal = []string{
+	"\\$\\w+",
+}
+
 // Hard coding identifiers for simplicity reasons (since the example won't change)
 // A better and more robust regex could be implemented
 var instructions = []string{
 	"local\\.get",
-	"i32\\.(add|sub)",
+	"i32\\.(add|sub|const)",
+	"call",
 }
 
 var numTypes = []string{
@@ -70,6 +76,7 @@ func matchChecker(regex string, whichType string) func(string, int) (types.Match
 
 var matchers = []func(string, int) (types.Matcher, error){
 	matchChecker("^("+strings.Join(tokens, "|")+")", texts.TypeToken),
+	matchChecker("^("+strings.Join(tokensFuncInternal, "|")+")", texts.FuncInternal),
 	matchChecker("^("+strings.Join(instructions, "|")+")", texts.TypeInstruction),
 	matchChecker("^("+strings.Join(numTypes, "|")+")", texts.TypeNum),
 	matchChecker("^("+strings.Join(literals, "|")+")", texts.TypeLiteral),
@@ -84,7 +91,6 @@ func Tokenize(input string) []types.Token {
 	for index < len(input) {
 		for _, m := range matchers {
 			matchFound, notFound := m(input, index)
-
 			// Prevent panic if no match is found
 			if notFound != nil {
 				continue
@@ -109,5 +115,6 @@ func Tokenize(input string) []types.Token {
 		index += len(matches[0].Value)
 		matches = []types.Matcher{}
 	}
+
 	return tokens
 }

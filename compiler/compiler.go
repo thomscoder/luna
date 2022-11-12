@@ -158,6 +158,8 @@ func Compile(ast []types.AstNode) Module {
 	var SECTION_EXPORT = sectionData{}
 	var SECTION_CODE = sectionData{}
 
+	var functionNumbers = []uint{}
+
 	functionType := sectionData{}
 	exportData := sectionData{}
 	functionBody := sectionData{}
@@ -175,6 +177,15 @@ func Compile(ast []types.AstNode) Module {
 
 			// Function types classify the signature of functions, mapping a vector of parameters to a vector of results.
 			functionType = append(functionType, sectionData{types.FuncType}...)
+
+			// Keep track of functions number and indexes
+			if len(functionNumbers) == 0 {
+				functionNumbers = append(functionNumbers, 0x00)
+				break
+			}
+
+			functionIndex := functionNumbers[len(functionNumbers)-1] + 1
+			functionNumbers = append(functionNumbers, functionIndex)
 
 		case texts.ParamStatement:
 			paramsAlreadyAdded := false
@@ -220,6 +231,32 @@ func Compile(ast []types.AstNode) Module {
 		// Instructions
 		// https://webassembly.github.io/spec/core/binary/instructions.html
 		case texts.GetLocalInstruction:
+			var localIndex uint
+			value, ok := node.Expression.Value.(string)
+			if !ok {
+				log.Fatal("Not string")
+			}
+
+			v, _ := strconv.Atoi(value)
+			localIndex = uint(v)
+
+			code = append(code, sectionData{node.MapTo}...)
+			code = append(code, omologateEncoded(localIndex)...)
+
+		case texts.CallStatement:
+			var _index uint = 0
+			code = append(code, sectionData{defaults.Opcodes["call"]}...)
+			for _, n := range ast {
+
+				if n.Type == texts.FuncStatement {
+					if n.Expression.Value == node.Expression.Value {
+						code = append(code, omologateEncoded(_index)...)
+					}
+					_index++
+				}
+			}
+
+		case texts.InternalInstruction:
 			var localIndex uint
 			value, ok := node.Expression.Value.(string)
 			if !ok {
@@ -279,8 +316,12 @@ func Compile(ast []types.AstNode) Module {
 	// Func Section
 	// The function section has the id 3. It decodes into a vector of type indices that represent the type fields
 	// of the functions in the funcs component of a module.
+	functionIndexes := sectionData{}
+	for _, number := range functionNumbers {
+		functionIndexes = append(functionIndexes, number)
+	}
 	// See https://webassembly.github.io/spec/core/binary/modules.html#function-section
-	SECTION_FUNCTION = createSection(defaults.Section["func"], encodeVector(sectionData{0x00}))
+	SECTION_FUNCTION = createSection(defaults.Section["func"], encodeVector(functionIndexes))
 	// Code section
 	// The code section has the id 10. It decodes into a vector of code entries that are pairs of value type vectors and expressions.
 	// See https://webassembly.github.io/spec/core/binary/modules.html#code-section

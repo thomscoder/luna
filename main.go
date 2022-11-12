@@ -19,8 +19,17 @@ func main() {
 				(func (export "addNumbers") (param i32 i32) (result i32)
 					local.get 0
 					local.get 1
-					i32.add)
+					call $add
+					i32.const 2
+					i32.sub
 				)
+
+				(func $add (param i32 i32) (result i32)
+					local.get 0
+					local.get 1
+					i32.add
+				)
+			)
 		`
 		compile(input)
 		return

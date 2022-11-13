@@ -43,6 +43,8 @@ var Opcodes = {
   i32_and: 113,
   i32_add: 106,
   i32_sub: 107,
+  i32_mul: 108,
+  i32_div: 109,
   f32_add: 146,
   f32_sub: 147,
   f32_mul: 148,
@@ -190,14 +192,18 @@ function parseCodeSection(wasm) {
     let numberOfLocals = wasm.readByte();
     let instructions = [];
     let locals = [];
+    let internals = [];
     while (wasm.pos < wasm.data.length) {
       const instruction = wasm.readByte();
       instructions.push(instruction);
       if (instruction == Opcodes.get_local) {
         locals.push(wasm.readByte());
       }
+      if (instruction == Opcodes.i32_const) {
+        internals.push(wasm.readByte());
+      }
     }
-    code.push([locals, instructions]);
+    code.push({ locals, internals, instructions });
   }
   return code;
 }
@@ -227,10 +233,11 @@ var Processor = class {
     this.stack = [];
   }
   executeFunc() {
-    for (const instruction of this.func[1]) {
-      if (instruction == Opcodes.get_local) {
-        this.stack.push(this.params[this.func[0].shift()]);
-      }
+    for (const instruction of this.func.instructions) {
+      if (instruction == Opcodes.get_local)
+        this.stack.push(this.params[this.func.locals.shift()]);
+      if (instruction == Opcodes.i32_const)
+        this.stack.push(this.func.internals.shift());
       this.#parseInstruction(instruction);
     }
   }
@@ -242,6 +249,12 @@ var Processor = class {
         return this.stack.push(result);
       case Opcodes.i32_sub:
         result = this.stack.reduce((prev, current) => prev - current);
+        return this.stack.push(result);
+      case Opcodes.i32_mul:
+        result = this.stack.reduce((prev, current) => prev * current, 1);
+        return this.stack.push(result);
+      case Opcodes.i32_div:
+        result = this.stack.reduce((prev, current) => prev / current);
         return this.stack.push(result);
     }
   }

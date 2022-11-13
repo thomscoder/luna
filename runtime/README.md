@@ -18,7 +18,7 @@ Aeon was built with Luna in mind and they travel together so whatever Luna can c
  (Check the `./example/example.js`)
 
  ```js
-const startAeonRuntime = require("./runtime/start");
+import startAeonRuntime from "./runtime/start"
  // This binary 
  // - takes 3 parameters of type `i32` (3, 127, 127, 127) 
  // - outputs one `i32` result (1, 127)

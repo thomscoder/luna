@@ -135,8 +135,6 @@ func parseStatement(currentToken *iteratorEmulatorStruct, eatToken func(val stri
 				Expression: parseExpression(currentToken, eatToken, index),
 				MapTo:      defaults.Opcodes["get_local"],
 			}
-		}
-		switch currentToken.token.Value {
 		case "i32.add":
 			eatToken("i32.add")
 			return types.AstNode{
@@ -150,6 +148,27 @@ func parseStatement(currentToken *iteratorEmulatorStruct, eatToken func(val stri
 				Type:       texts.FuncInstruction,
 				Expression: types.ExpressionNode{},
 				MapTo:      defaults.Opcodes["i32_sub"],
+			}
+		case "i32.mul":
+			eatToken("i32.mul")
+			return types.AstNode{
+				Type:       texts.FuncInstruction,
+				Expression: types.ExpressionNode{},
+				MapTo:      defaults.Opcodes["i32_mul"],
+			}
+		case "i32.div":
+			eatToken("i32.div")
+			return types.AstNode{
+				Type:       texts.FuncInstruction,
+				Expression: types.ExpressionNode{},
+				MapTo:      defaults.Opcodes["i32_div"],
+			}
+		case "i32.const":
+			eatToken("i32.const")
+			return types.AstNode{
+				Type:       texts.InternalInstruction,
+				Expression: parseExpression(currentToken, eatToken, index),
+				MapTo:      defaults.Opcodes["i32_const"],
 			}
 		}
 	}

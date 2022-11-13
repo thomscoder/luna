@@ -9,10 +9,9 @@ export default class Processor {
   }
 
   executeFunc() {
-    for (const instruction of this.func[1]) {
-      if (instruction == Opcodes.get_local) {
-        this.stack.push(this.params[this.func[0].shift()]);
-      }
+    for (const instruction of this.func.instructions) {
+      if (instruction == Opcodes.get_local) this.stack.push(this.params[this.func.locals.shift()]);
+      if (instruction == Opcodes.i32_const) this.stack.push(this.func.internals.shift());
       
       this.#parseInstruction(instruction)
     }
@@ -30,6 +29,14 @@ export default class Processor {
 
       case Opcodes.i32_sub:
         result = this.stack.reduce((prev, current) => prev - current);
+        return this.stack.push(result);
+      
+      case Opcodes.i32_mul:
+        result = this.stack.reduce((prev, current) => prev * current, 1);
+        return this.stack.push(result);
+      
+      case Opcodes.i32_div:
+        result = this.stack.reduce((prev, current) => prev / current);
         return this.stack.push(result);
     }
   } 

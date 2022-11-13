@@ -268,6 +268,19 @@ func Compile(ast []types.AstNode) Module {
 			functionBody = append(functionBody, sectionData{0x01})
 			functionBody = append(functionBody, encodeVector(functionBodyData)...)
 
+		// Internal instructions (e.g. i32.const)
+		case texts.InternalInstruction:
+			var localIndex uint
+			value, ok := node.Expression.Value.(string)
+			if !ok {
+				log.Fatal("Not string")
+			}
+
+			v, _ := strconv.Atoi(value)
+			localIndex = uint(v)
+
+			code = append(code, sectionData{node.MapTo}...)
+			code = append(code, omologateEncoded(localIndex)...)
 		}
 
 	}

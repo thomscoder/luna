@@ -15,9 +15,9 @@
       A sample compiler for WebAssembly Text Format.<br/>
       Check the <a href="http://github.com/thomscoder/luna" target="_blank">github repository</a>
     </p>
+    <small>Try to change the name of the export (e.g. "addNumbers" to "lunaAddition")</small>
     <div class="container">
       <div class="inner-container">
-        <small>Try to change the name of the export (e.g. "addNumbers" to "lunaAddition")</small>
         <div id="code"></div>
         <button id="compile">Compile</button>
       </div>
@@ -46,7 +46,8 @@
     as it defines some global objects 
     -->
     <script src="./js/wasm_exec.js"></script>
-    <script src="./editor/editor.js"></script>
     <script type="module" src="./js/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/addon/mode/simple.min.js" integrity="sha512-CGM6DWPHs250F/m90YZ9NEiEUhd9a4+u8wAzeKC6uHzZbYyt9/e2dLC5BGGB6Y0HtEdZQdSDYjDsoTyNGdMrMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/mode/wast/wast.min.js" integrity="sha512-jROitIYzp4fmQniVqF+eAnO5xKsZbKhI9Mue2XHaUtyC6rFxvcS/utxK+e1tMdlN/JP20A1qPEPPHwts42A4JQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   </body>
 </html>

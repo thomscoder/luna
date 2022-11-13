@@ -5,7 +5,6 @@
 
 #code {
     border: solid black;
-    height: 100%;
 }
 
 .inner-container:not(.inner-container:first-child) {

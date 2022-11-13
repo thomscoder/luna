@@ -19,6 +19,13 @@
     <div class="container">
       <div class="inner-container">
         <div id="code"></div>
+        <select id="instruction">
+          <option value="addition">Addition</option>
+          <option value="subtraction">Subtraction</option>
+          <option value="division">Division</option>
+          <option value="multiplication">Multiplication</option>
+          <option value="const">Const</option>
+        </select>
         <button id="compile">Compile</button>
       </div>
       <div class="inner-container">
@@ -29,11 +36,11 @@
       <div class="inner-container">
         Calculate (add or subtract):
         <div>
-          <label for="t-input-1">Num 1</label>
+          <label id="label-1" for="t-input-1">Num 1</label>
           <input name="t-input-1" id="input-1" type="text" />
         </div>
         <div>
-          <label for="t-input-2">Num 2</label>
+          <label id="label-2" for="t-input-2">Num 2</label>
           <input name="t-input-2" id="input-2" type="text" />
         </div>
         <div id="btn-result-container"><button id="btn">Result</button></div>

@@ -234,12 +234,10 @@ var Processor = class {
   }
   executeFunc() {
     for (const instruction of this.func.instructions) {
-      if (instruction == Opcodes.get_local) {
+      if (instruction == Opcodes.get_local)
         this.stack.push(this.params[this.func.locals.shift()]);
-      }
-      if (instruction == Opcodes.i32_const) {
+      if (instruction == Opcodes.i32_const)
         this.stack.push(this.func.internals.shift());
-      }
       this.#parseInstruction(instruction);
     }
   }
@@ -282,7 +280,6 @@ function invokeFunction(ast, funcName, params) {
 // runtime/runtime/start.js
 var startAeonRuntime = (wasm, ...args) => {
   const ast = createAST(wasm);
-  console.log("FUCK", wasm);
   const [funcName, ...rest] = args;
   const params = rest;
   const result = invokeFunction(ast, funcName, params);

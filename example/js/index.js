@@ -1,4 +1,6 @@
 import startAeonRuntime from '../dist/bundle.js';
+import { defaultText } from './inputDefaultText.js';
+import { CONST_MODE } from './texts/texts.js';
 
 const go = new Go(); // Defined in wasm_exec.js. Don't forget to add this in your index.html.
 
@@ -43,8 +45,10 @@ const runLunaAddition = async () => {
   // Set the result onto the doc
   const input1 = document.getElementById('input-1');
   const input2 = document.getElementById('input-2');
+  const label2 = document.getElementById('label-2')
   const codeContainer = document.getElementById('code');
   const moduleContainer = document.getElementById('module');
+  const selectInstruction = document.getElementById('instruction');
 
   const compile = document.getElementById('compile');
   const btn = document.getElementById('btn')
@@ -54,20 +58,22 @@ const runLunaAddition = async () => {
 
 
   btn.setAttribute('disabled', true)
-  const input = `(module
-  (func (export "addNumbers") (param i32 i32) (result i32)
-    local.get 0
-    local.get 1
-    i32.add)
-)
-`
 
-
-  const editor = CodeMirror(codeContainer, {
-    value: input,
+  let editor = CodeMirror(codeContainer, {
+    value: defaultText(selectInstruction),
     mode:  "wast",
     lineNumbers: true,
   });
+
+  // Change editor content based on selected mode
+  selectInstruction.onchange = (e) => {
+    editor.setValue(defaultText(selectInstruction));
+    // Hide second input on const
+    if (e.target.value === CONST_MODE) {
+      input2.style.display = 'none';
+      label2.style.display = 'none';
+    }
+  }
 
   compile.addEventListener('click', async () => {
     moduleContainer.innerHTML = ""

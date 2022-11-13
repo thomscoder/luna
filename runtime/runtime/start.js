@@ -3,6 +3,7 @@ import { invokeFunction } from "./invoker.js";
 
 const startAeonRuntime = (wasm, ...args) => {
     const ast = createAST(wasm);
+    console.log("FUCK", wasm)
     const [funcName, ...rest] = args;
     const params = rest;
 

@@ -19,6 +19,7 @@ const (
 
 	TypeInstruction     = "instruction"
 	FuncInstruction     = "funcInstruction"
+	InternalInstruction = "internalInstruction"
 	GetLocalInstruction = "getLocalInstruction"
 
 	Number = "number"

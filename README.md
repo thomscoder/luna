@@ -6,7 +6,7 @@ Luna is a reeeaaally tiny, yet expanding, compiler for WebAssembly Text Format, 
 
 <img src="https://i.ibb.co/hdcV1h0/Screenshot-2022-11-01-alle-17-47-06.png" alt="luna" />
 
-It is so tiny that can only make additions lol.
+It is so tiny that can only make the four operations (addition, subtraction, multiplication and division) with `i32` type numbers.
 
 # Why ❓
 

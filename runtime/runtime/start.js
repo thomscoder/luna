@@ -1,13 +1,12 @@
 import { createAST } from "./ast.js";
 import { invokeFunction } from "./invoker.js";
 
-const startAeonRuntime = (wasm, ...args) => {
-    const ast = createAST(wasm);
-    const [funcName, ...rest] = args;
-    const params = rest;
-
-    const result = invokeFunction(ast, funcName, params);
-    return result;
+/**
+  @param wasm - A wasm binary.
+*/
+const createAeonRuntime = (wasm) => {
+  const ast = createAST(wasm);
+  return (funcName, params) => invokeFunction(ast, funcName, params);
 }
 
-export default startAeonRuntime;
+export default createAeonRuntime;

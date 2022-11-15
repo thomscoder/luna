@@ -1,7 +1,7 @@
 # Aeon - A runtime for Luna ⏳✨
 
 Aeon is an extremely tiny, but easy to use WebAssembly runtime, built for demonstration and educational purposes.
-It is so tiny that supports only additions, subtractions and i32 integers. 
+It is so tiny that supports only additions, subtractions and i32 integers.
 
 It is part of the <a href="https://github.com/thomscoder/luna" target="_blank">Luna</a> project, so they integrate very very well.
 Its purpose is to give an high-level overview of how to build a custom WebAssembly runtime.
@@ -18,9 +18,9 @@ Aeon was built with Luna in mind and they travel together so whatever Luna can c
  (Check the `./example/example.js`)
 
  ```js
-import startAeonRuntime from "./runtime/start"
- // This binary 
- // - takes 3 parameters of type `i32` (3, 127, 127, 127) 
+import createAeonRuntime from "./runtime/start"
+ // This binary
+ // - takes 3 parameters of type `i32` (3, 127, 127, 127)
  // - outputs one `i32` result (1, 127)
  // - exports a function called "addNumbers" (12, 34, 97, 100, 100, 78, 117, 109, 98, 101, 114, 115, 34)
  // - that adds them all (0, 32, 0, 32, 1, 32, 2, 106, 11)
@@ -30,7 +30,8 @@ const n1 = 8;
 const n2 = 20;
 const n3 = 23;
 
-const result = startAeonRuntime(wasmBinary, "addNumbers", n1, n2, n3);
+const runtime = createAeonRuntime(wasmBinary);
+const result = runtime("addNumbers", n1, n2, n3);
 console.log(`${n1} + ${n2} + ${n3} =`, result) // prints 51
  ```
 

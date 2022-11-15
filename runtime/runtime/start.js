@@ -6,7 +6,7 @@ import { invokeFunction } from "./invoker.js";
 */
 const createAeonRuntime = (wasm) => {
   const ast = createAST(wasm);
-  return (funcName, params) => invokeFunction(ast, funcName, params);
+  return (funcName, ...params) => invokeFunction(ast, funcName, params);
 }
 
 export default createAeonRuntime;

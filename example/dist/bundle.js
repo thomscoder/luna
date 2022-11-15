@@ -278,14 +278,11 @@ function invokeFunction(ast, funcName, params) {
 }
 
 // runtime/runtime/start.js
-var startAeonRuntime = (wasm, ...args) => {
+var createAeonRuntime = (wasm) => {
   const ast = createAST(wasm);
-  const [funcName, ...rest] = args;
-  const params = rest;
-  const result = invokeFunction(ast, funcName, params);
-  return result;
+  return (funcName, ...params) => invokeFunction(ast, funcName, params);
 };
-var start_default = startAeonRuntime;
+var start_default = createAeonRuntime;
 export {
   start_default as default
 };

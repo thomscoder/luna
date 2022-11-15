@@ -1,4 +1,4 @@
-import startAeonRuntime from '../dist/bundle.js';
+import createAeonRuntime from '../dist/bundle.js';
 import { defaultText } from './inputDefaultText.js';
 import { CONST_MODE } from './texts/texts.js';
 
@@ -108,7 +108,9 @@ const runLunaAddition = async () => {
       // ---------------------------------------------------------------------------------------
       const funcName = fn.replace(/"/g, '');
 
-      const result = startAeonRuntime(_wasm, funcName, n1, n2);
+      const runtime = createAeonRuntime(_wasm);
+      const result = runtime(funcName, n1, n2);
+
       aeonRes.innerHTML = `Ran with Aeon: ${result}`
       })
     } catch (err) {

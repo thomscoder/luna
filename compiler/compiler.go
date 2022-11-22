@@ -169,6 +169,12 @@ func Compile(ast []types.AstNode) Module {
 			// MAGIC and VERSION don't change until a newer version of WebAssembly gets released
 			module = append(module, defaults.MAGIC...)
 			module = append(module, defaults.VERSION...)
+
+			// if the module is empty return
+			if node.Expression.Value == nil {
+				return module
+			}
+
 		case texts.FuncStatement:
 			// num of types (i32, f32, i64, f64) inside the function
 			functionType = append(functionType, sectionData{0x01}...)

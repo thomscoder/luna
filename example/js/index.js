@@ -85,14 +85,25 @@ const runLunaAddition = async () => {
 
     try {
       const wasmer = await WebAssembly.instantiate(wasm);
-      const fn = Object.keys(wasmer.instance.exports)[0]
-      moduleContainer.innerHTML = `<p>Compiled successfully!\nExported function <span class="exported">${fn}</span></p>\n`
+      const fn = Object.keys(wasmer.instance.exports)[0];
+
+      // if module is empty, then make input section disappear
+      if (typeof wasmer.instance.exports[fn] == "undefined" && wasm.length == 8) {
+        moduleContainer.innerHTML = `<p>Module is <span class="exported">empty</span></p>\n`
+        input1.setAttribute("disabled", "true")
+        input2.setAttribute("disabled", "true")
+        btn.setAttribute('disabled', "true")
+      } else {
+        moduleContainer.innerHTML = `<p>Compiled successfully!\nExported function <span class="exported">${fn}</span></p>\n`
+        input1.removeAttribute("disabled")
+        input2.removeAttribute("disabled")
+        btn.removeAttribute('disabled')
+      }
 
       for (const hex of wasm) {
         moduleContainer.innerHTML += `<p class="hex-dump">${hex}</p>`
       }
 
-      btn.removeAttribute('disabled')
 
       btn.addEventListener('click', () => {
         const n1 = Number(input1.value);

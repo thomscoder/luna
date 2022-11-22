@@ -54,7 +54,12 @@ func Parser(tokens []types.Token) []types.AstNode {
 
 	currentToken := iterator.next(tokens)
 
+	// If the module is empty return the Ast with only the module
 	if currentToken.done {
+		nodes = append(nodes, types.AstNode{
+			Type:       texts.ModuleStatement,
+			Expression: types.ExpressionNode{},
+		})
 		return nodes
 	}
 
@@ -88,8 +93,9 @@ func parseStatement(currentToken *iteratorEmulatorStruct, eatToken func(val stri
 		case "module":
 			eatToken("module")
 			return types.AstNode{
-				Type:       texts.ModuleStatement,
-				Expression: types.ExpressionNode{},
+				Type: texts.ModuleStatement,
+				// Check if the module is empty by inspecting the next node
+				Expression: parseExpression(currentToken, eatToken, index),
 			}
 
 		case "func":
@@ -222,7 +228,12 @@ func parseExpression(currentToken *iteratorEmulatorStruct, eatToken func(val str
 
 		return log
 
-	}
+	// Make node aware of which node is coming after
+	default:
+		log := types.ExpressionNode{
+			Value: currentToken.token.Value,
+		}
 
-	return types.ExpressionNode{}
+		return log
+	}
 }

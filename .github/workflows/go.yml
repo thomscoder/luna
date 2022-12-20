@@ -6,7 +6,7 @@ jobs:
     strategy:
       matrix:
         os: ["macOS-latest", "windows-latest", "ubuntu-latest"]
-        go-version: ["1.14", "1.15", "1.16.x"]
+        go-version: ["1.16", "1.17.x", "1.18.x", "1.19"]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3

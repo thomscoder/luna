@@ -5,31 +5,30 @@ import (
 	"luna/compiler"
 	"strings"
 
-	"syscall/js"
+	// "syscall/js"
 
 	"github.com/spatialcurrent/go-stringify/pkg/stringify"
 )
 
 func main() {
-	mode := "browser"
+	mode := "broser"
 
 	if mode != "browser" {
-		input := `
-			(module
-				(func (export "addNumbers") (param i32 i32) (result i32)
+		input := `(module
+				(func (export "operationWithInternalVariable") (param i32 i32) (result i32)
 					local.get 0
-					local.get 1
+					i32.const 10
 					i32.add)
 				)
-		`
+			`
 		compile(input)
 		return
 	}
 
-	// Spin it in browser
-	wait := make(chan struct{}, 0)
-	js.Global().Set("startLuna", js.FuncOf(startLuna))
-	<-wait
+	// // Spin it in browser
+	// wait := make(chan struct{}, 0)
+	// js.Global().Set("startLuna", js.FuncOf(startLuna))
+	// <-wait
 }
 
 //export compile
@@ -59,10 +58,10 @@ func compile(input string) string {
 	return strings.Join(str, " ")
 }
 
-// TINYGO NOTE:  there is no export as we registered this function in global
-func startLuna(this js.Value, args []js.Value) interface{} {
-	input := args[0].String()
-	return js.ValueOf(map[string]interface{}{
-		"module": compile(input),
-	})
-}
+// // TINYGO NOTE:  there is no export as we registered this function in global
+// func startLuna(this js.Value, args []js.Value) interface{} {
+// 	input := args[0].String()
+// 	return js.ValueOf(map[string]interface{}{
+// 		"module": compile(input),
+// 	})
+// }

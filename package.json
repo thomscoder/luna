@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "go test ./...",
     "build": "rimraf ./dist && make compile",
     "start:runtime": "node ./runtime/index.js",
     "bundle": "rimraf ./example/dist && esbuild ./runtime/runtime/start.js --bundle --outfile=./example/dist/bundle.js --format=esm",

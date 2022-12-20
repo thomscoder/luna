@@ -1,5 +1,7 @@
 package compiler
 
+import "fmt"
+
 // According to WebAssembly specification (https://webassembly.github.io/spec/core/_download/WebAssembly.pdf)
 // strings are encoded using UTF-8 encoding
 // Go uses it by default
@@ -9,6 +11,7 @@ func encodeString(str string) []interface{} {
 	for _, v := range str {
 		encodedString = append(encodedString, interface{}(rune(v)))
 	}
+	fmt.Println("BUFF", encodedString)
 
 	return encodedString
 }

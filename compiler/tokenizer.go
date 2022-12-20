@@ -44,20 +44,25 @@ var numTypes = []string{
 // We can hard hardcode a bunch of names for function export
 // so we do not need to change this everytime
 // or implement a simple regex to catch anything between quotes
-var literals = []string{
-	"\"([^\"]+)\"",
-}
+var literals = "\"([^\"]+)\""
 
 // The tokenizer goes through the input (string) and gets all the matching patterns
 // that represent the tokens
 
+// List of regex
+var tokensRegex = regexp.MustCompile("^(" + strings.Join(tokens, "|") + ")")
+var instructionRegex = regexp.MustCompile("^(" + strings.Join(instructions, "|") + ")")
+var typeNumRegex = regexp.MustCompile("^(" + strings.Join(numTypes, "|") + ")")
+var literalsRegex = regexp.MustCompile("^(" + literals + ")")
+var numberRegex = regexp.MustCompile("^[0-9]+")
+var whitespaceRegex = regexp.MustCompile(`^\s+`)
+
 // Higher order function
-func matchChecker(regex string, whichType string) func(string, int) (types.Matcher, error) {
+func matchChecker(rxp *regexp.Regexp, whichType string) func(string, int) (types.Matcher, error) {
 
 	return func(input string, index int) (types.Matcher, error) {
 
 		substr := input[index:]
-		rxp := regexp.MustCompile(regex)
 		match := rxp.FindString(substr)
 
 		if len(match) > 0 {
@@ -68,19 +73,20 @@ func matchChecker(regex string, whichType string) func(string, int) (types.Match
 	}
 }
 
-var matchers = []func(string, int) (types.Matcher, error){
-	matchChecker("^("+strings.Join(tokens, "|")+")", texts.TypeToken),
-	matchChecker("^("+strings.Join(instructions, "|")+")", texts.TypeInstruction),
-	matchChecker("^("+strings.Join(numTypes, "|")+")", texts.TypeNum),
-	matchChecker("^("+strings.Join(literals, "|")+")", texts.TypeLiteral),
-	matchChecker("^[0-9]+", texts.Number),
-	matchChecker("^\\s+", texts.Whitespace),
-}
-
 func Tokenize(input string) []types.Token {
 	tokens := []types.Token{}
 	matches := []types.Matcher{}
 	index := 0
+
+	matchers := []func(string, int) (types.Matcher, error){
+		matchChecker(tokensRegex, texts.TypeToken),
+		matchChecker(instructionRegex, texts.TypeInstruction),
+		matchChecker(typeNumRegex, texts.TypeNum),
+		matchChecker(literalsRegex, texts.TypeLiteral),
+		matchChecker(numberRegex, texts.Number),
+		matchChecker(whitespaceRegex, texts.Whitespace),
+	}
+
 	for index < len(input) {
 		for _, m := range matchers {
 			matchFound, notFound := m(input, index)
@@ -96,14 +102,14 @@ func Tokenize(input string) []types.Token {
 			index++
 			continue
 		}
-		match := types.Token{
+		match := &types.Token{
 			Type:  matches[0].Type,
 			Value: matches[0].Value,
 			Index: index,
 		}
 
 		if match.Type != "whitespace" {
-			tokens = append(tokens, match)
+			tokens = append(tokens, *match)
 		}
 
 		index += len(matches[0].Value)
